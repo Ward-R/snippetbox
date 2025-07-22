@@ -8,6 +8,13 @@ import (
 func main() {
 	// this starts a new mux(router). sets / pattern to home function
 	mux := http.NewServeMux()
+
+	// create file server to get files from ./ui/static dir
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
+
+	// Use mux to register file server to handle all static paths
+	mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
+
 	mux.HandleFunc("GET /{$}", home)                          // Display the home page
 	mux.HandleFunc("GET /snippet/view/{id}", snippetView)     // Display a specific snippet
 	mux.HandleFunc("GET /snippet/create", snippetCreate)      // Display form for creating new snippet
