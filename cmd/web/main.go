@@ -1,11 +1,20 @@
 package main
 
 import (
-	"log"
+	"flag"
+	"log/slog"
 	"net/http"
+	"os"
 )
 
 func main() {
+	// command-line flag for HTTP network address
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	flag.Parse()
+
+	// initialize structured logger writing to stdout
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+
 	// this starts a new mux(router). sets / pattern to home function
 	mux := http.NewServeMux()
 
@@ -20,10 +29,11 @@ func main() {
 	mux.HandleFunc("GET /snippet/create", snippetCreate)      // Display form for creating new snippet
 	mux.HandleFunc("POST /snippet/create", snippetCreatePost) // Save new snippet
 
-	log.Print("starting server on :4000")
+	logger.Info("starting server", slog.String("addr", *addr))
 
 	// This starts a new server. Every HTTP request it gets it wills send to the mux
 	// to be routed. host:port
-	err := http.ListenAndServe(":4000", mux)
-	log.Fatal(err)
+	err := http.ListenAndServe(*addr, mux)
+	logger.Error(err.Error())
+	os.Exit(1)
 }
