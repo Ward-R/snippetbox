@@ -2,15 +2,38 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"text/template"
 )
 
 // This is the home handler function. Hello is the response body.
 func home(w http.ResponseWriter, r *http.Request) {
 	// This adds a Server: Go header the to response header map.
 	w.Header().Add("Server", "Go")
-	w.Write([]byte("Hello from snippetbox"))
+
+	// Initialize a slice containing paths to our template(HTML) files
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/pages/home.tmpl",
+	}
+
+	// This reads the template file (HTML) int a template set unless error
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Now execute the template set to write the template(HTML) as response body
+	err = ts.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
 }
 
 // snippetView handler
