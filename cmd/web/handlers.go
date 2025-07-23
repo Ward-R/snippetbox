@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"text/template"
 )
 
 // This is the home handler function. Hello is the response body.
-func home(w http.ResponseWriter, r *http.Request) {
+func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// This adds a Server: Go header the to response header map.
 	w.Header().Add("Server", "Go")
 
@@ -23,21 +22,19 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// This reads the template file (HTML) int a template set unless error
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, r, err) // uses serverError() helper
 		return
 	}
 
 	// Now execute the template set to write the template(HTML) as response body
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, r, err) // uses serverError() helper
 	}
 }
 
 // snippetView handler
-func snippetView(w http.ResponseWriter, r *http.Request) {
+func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id < 1 {
 		http.NotFound(w, r)
@@ -48,12 +45,12 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 // snippetCreate handler
-func snippetCreate(w http.ResponseWriter, r *http.Request) {
+func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Display a form for creating a new snippet..."))
 }
 
 // snippetCreatePost handler
-func snippetCreatePost(w http.ResponseWriter, r *http.Request) {
+func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
 	// Send a 201 created status code
 	w.WriteHeader(http.StatusCreated)
 
