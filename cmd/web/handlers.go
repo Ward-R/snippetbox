@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
+
+	//"text/template"
 
 	"github.com/Ward-R/snippetbox/internal/models"
 )
@@ -15,25 +16,35 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// This adds a Server: Go header the to response header map.
 	w.Header().Add("Server", "Go")
 
-	// Initialize a slice containing paths to our template(HTML) files
-	files := []string{
-		"./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/home.tmpl",
-	}
-
-	// This reads the template file (HTML) int a template set unless error
-	ts, err := template.ParseFiles(files...)
+	snippets, err := app.snippets.Latest()
 	if err != nil {
-		app.serverError(w, r, err) // uses serverError() helper
+		app.serverError(w, r, err)
 		return
 	}
 
-	// Now execute the template set to write the template(HTML) as response body
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.serverError(w, r, err) // uses serverError() helper
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%+v\n", snippet)
 	}
+
+	// // Initialize a slice containing paths to our template(HTML) files
+	// files := []string{
+	// 	"./ui/html/base.tmpl",
+	// 	"./ui/html/partials/nav.tmpl",
+	// 	"./ui/html/pages/home.tmpl",
+	// }
+
+	// // This reads the template file (HTML) int a template set unless error
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.serverError(w, r, err) // uses serverError() helper
+	// 	return
+	// }
+
+	// // Now execute the template set to write the template(HTML) as response body
+	// err = ts.ExecuteTemplate(w, "base", nil)
+	// if err != nil {
+	// 	app.serverError(w, r, err) // uses serverError() helper
+	// }
 }
 
 // snippetView handler
