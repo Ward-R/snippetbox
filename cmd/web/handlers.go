@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"html/template"
-
 	"github.com/Ward-R/snippetbox/internal/models"
 )
 
@@ -22,10 +20,10 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%+v\n", snippet)
-	}
-
+	// Use render helper
+	app.render(w, r, http.StatusOK, "home.tmpl", templateData{
+		Snippets: snippets,
+	})
 }
 
 // snippetView handler
@@ -49,30 +47,10 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Initialize a slice containing paths to our template(HTML) files
-	files := []string{
-		"./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/view.tmpl",
-	}
-
-	// This reads the template file (HTML) int a template set unless error
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, r, err) // uses serverError() helper
-		return
-	}
-
-	// Create an instance of a templateData struct holding the snippet data
-	data := templateData{
+	// Use render helper
+	app.render(w, r, http.StatusOK, "view.tmpl", templateData{
 		Snippet: snippet,
-	}
-
-	// Pass in the template Data struct when executing the template
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, r, err) // uses serverError() helper
-	}
+	})
 }
 
 // snippetCreate handler

@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log/slog"
 	"net/http"
 	"os"
@@ -14,8 +15,9 @@ import (
 
 // This application struct holds application-wide dependencies.
 type application struct {
-	logger   *slog.Logger
-	snippets *models.SnippetModel
+	logger        *slog.Logger
+	snippets      *models.SnippetModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -36,13 +38,21 @@ func main() {
 
 	defer db.Close()
 
-	// initialize new instance of application struct
-	app := &application{
-		logger:   logger,
-		snippets: &models.SnippetModel{DB: db},
+	// Initialize a new template cache...
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
 	}
 
-	logger.Info("starting server", slog.String("addr", *addr))
+	// initialize new instance of application struct
+	app := &application{
+		logger:        logger,
+		snippets:      &models.SnippetModel{DB: db},
+		templateCache: templateCache,
+	}
+
+	logger.Info("starting server", "addr", *addr)
 
 	// This starts a new server. Every HTTP request it gets it wills send to the mux
 	// to be routed. host:port
