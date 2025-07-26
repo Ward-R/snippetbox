@@ -1,8 +1,12 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
 
-func (app *application) routes() *http.ServeMux {
+	"github.com/justinas/alice"
+)
+
+func (app *application) routes() http.Handler {
 	// this starts a new mux(router). sets / pattern to home function
 	mux := http.NewServeMux()
 
@@ -17,5 +21,14 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("GET /snippet/create", app.snippetCreate)      // Display form for creating new snippet
 	mux.HandleFunc("POST /snippet/create", app.snippetCreatePost) // Save new snippet
 
-	return mux
+	// The middleware chain previously looked like this:
+	// return app.recoverPanic(app.logRequest(commonHeaders(mux)))
+
+	// It has been changed to look cleaner with justinas/alice package
+	// Middleware chain conaining the standard middleware
+	// this will be used for every request our application receives
+	standard := alice.New(app.recoverPanic, app.logRequest, commonHeaders)
+
+	// Return the standard middleware chain followed by the servemux.
+	return standard.Then(mux)
 }

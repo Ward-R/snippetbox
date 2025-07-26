@@ -11,9 +11,6 @@ import (
 
 // This is the home handler function. Hello is the response body.
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	// This adds a Server: Go header the to response header map.
-	w.Header().Add("Server", "Go")
-
 	snippets, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, r, err)
