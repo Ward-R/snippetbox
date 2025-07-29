@@ -16,10 +16,15 @@ func (app *application) routes() http.Handler {
 	// Use mux to register file server to handle all static paths
 	mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
 
-	mux.HandleFunc("GET /{$}", app.home)                          // Display the home page
-	mux.HandleFunc("GET /snippet/view/{id}", app.snippetView)     // Display a specific snippet
-	mux.HandleFunc("GET /snippet/create", app.snippetCreate)      // Display form for creating new snippet
-	mux.HandleFunc("POST /snippet/create", app.snippetCreatePost) // Save new snippet
+	// Create a new middleware chain containing the middleware specific to our
+	// dynamic application routes. For now, this chain will only contain the
+	// LoadAndSave session middleware but we'll add more to it later.
+	dynamic := alice.New(app.sessionManager.LoadAndSave)
+
+	mux.Handle("GET /{$}", dynamic.ThenFunc(app.home))                          // Display the home page
+	mux.Handle("GET /snippet/view/{id}", dynamic.ThenFunc(app.snippetView))     // Display a specific snippet
+	mux.Handle("GET /snippet/create", dynamic.ThenFunc(app.snippetCreate))      // Display form for creating new snippet
+	mux.Handle("POST /snippet/create", dynamic.ThenFunc(app.snippetCreatePost)) // Save new snippet
 
 	// The middleware chain previously looked like this:
 	// return app.recoverPanic(app.logRequest(commonHeaders(mux)))
