@@ -25,7 +25,11 @@ func (app *application) routes() http.Handler {
 	mux.Handle("GET /snippet/view/{id}", dynamic.ThenFunc(app.snippetView))     // Display a specific snippet
 	mux.Handle("GET /snippet/create", dynamic.ThenFunc(app.snippetCreate))      // Display form for creating new snippet
 	mux.Handle("POST /snippet/create", dynamic.ThenFunc(app.snippetCreatePost)) // Save new snippet
-
+	mux.Handle("GET /user/signup", dynamic.ThenFunc(app.userSignup))
+	mux.Handle("POST /user/signup", dynamic.ThenFunc(app.userSignupPost))
+	mux.Handle("GET /user/login", dynamic.ThenFunc(app.userLogin))
+	mux.Handle("POST /user/login", dynamic.ThenFunc(app.userLoginPost))
+	mux.Handle("POST /user/logout", dynamic.ThenFunc(app.userLogoutPost))
 	// The middleware chain previously looked like this:
 	// return app.recoverPanic(app.logRequest(commonHeaders(mux)))
 
