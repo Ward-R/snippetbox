@@ -2,8 +2,8 @@
 
 This is a web application for creating and sharing code snippets, built as a guided project to learn core concepts in Go. The project is based on the book *Let's Go Professional* by Alex Edwards. This experience has significantly improved my understanding of topics like file handling, database models, dependency injection, and testing in a more structured way than with dynamic languages like Ruby.
 
-<img width="1278" height="1363" alt="SnippetHPPic" src="https://github.com/user-attachments/assets/88cf31dc-95cd-4115-9482-1e9c27dca618" />
-<img width="1278" height="1363" alt="SnippetView" src="https://github.com/user-attachments/assets/51a35f95-0b3a-4087-86a0-2206f15e91b7" />
+<img width="600" height="640" alt="SnippetHPPic" src="https://github.com/user-attachments/assets/88cf31dc-95cd-4115-9482-1e9c27dca618" />
+<img width="600" height="640" alt="SnippetView" src="https://github.com/user-attachments/assets/51a35f95-0b3a-4087-86a0-2206f15e91b7" />
 
 
 
